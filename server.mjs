@@ -10,9 +10,10 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Replace with frontend URL in production
-    methods: ["GET", "POST"]
-  }
+  origin: "https://whiteboard-pied.vercel.app",
+  methods: ["GET", "POST"],
+  credentials: true
+}
 });
 
 io.on("connection", (socket) => {
