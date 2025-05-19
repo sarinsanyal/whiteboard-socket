@@ -10,10 +10,10 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-  origin: "https://whiteboard-pied.vercel.app",
-  methods: ["GET", "POST"],
-  credentials: true
-}
+    origin: "https://whiteboard-pied.vercel.app",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 io.on("connection", (socket) => {
@@ -21,6 +21,10 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", ({ room, username }) => {
     socket.join(room);
+    // Store user info on the socket instance
+    socket.data.username = username;
+    socket.data.room = room;
+
     console.log(`User ${username} joined room ${room}`);
     socket.to(room).emit("user_joined", `${username} joined room`);
   });
@@ -30,11 +34,21 @@ io.on("connection", (socket) => {
     socket.to(room).emit("message", { roomId: room, sender, content: message });
   });
 
+  socket.on("leave-room", ({ room, username }) => {
+    socket.leave(room);
+    console.log(`User ${username} manually left room ${room}`);
+    socket.to(room).emit("user_left", `${username} left the room`);
+  });
+
   socket.on("disconnect", () => {
-    const { username, room } = socket.data;
-    if (username && room) {
+    const username = socket.data.username;
+    const room = socket.data.room;
+
+    if (room && username) {
       console.log(`User ${username} left room ${room}`);
       socket.to(room).emit("user_left", `${username} left the room`);
+    } else {
+      console.log(`User ${socket.id} disconnected without joining a room.`);
     }
   });
 });
