@@ -45,6 +45,7 @@ io.on("connection", (socket) => {
         });
         
         const textResponse = response.candidates[0].content;
+        console.log("AI response: ", textResponse);
 
         io.to(room).emit("message", {
           roomId: room,
