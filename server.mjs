@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
       try {
         const response = await genAI.models.generateContent({
           model: 'gemini-2.0-flash',
-          contents: prompt,
+          contents: "In short, give me an answer: " + prompt,
         });
         
         const textResponse = response.candidates[0].content.parts[0].text;
