@@ -7,6 +7,7 @@
     "start": "node server.mjs"
   },
   "dependencies": {
-    "socket.io": "^4.7.2"
+    "@google/generative-ai": "^0.24.1",
+    "socket.io": "^4.8.1"
   }
 }

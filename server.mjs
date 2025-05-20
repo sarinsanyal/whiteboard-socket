@@ -1,7 +1,9 @@
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const port = process.env.PORT || 3001;
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const httpServer = createServer((req, res) => {
   res.writeHead(200);
@@ -29,9 +31,32 @@ io.on("connection", (socket) => {
     socket.to(room).emit("user_joined", `${username} joined room`);
   });
 
-  socket.on("message", ({ room, message, sender }) => {
+  socket.on("message", async ({ room, message, sender }) => {
     console.log(`Message from ${sender} in room ${room}: ${message}`);
     socket.to(room).emit("message", { roomId: room, sender, content: message });
+
+    if (message.trim().startsWith("@AI")) {
+      const prompt = message.replace("@AI", "").trim();
+
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await model.generateContent(prompt);
+        const response = await result.response.text();
+
+        io.to(room).emit("message", {
+          roomId: room,
+          sender: "AI Assistant",
+          content: response,
+        });
+      } catch (error) {
+        console.error("Gemini error:", error);
+        socket.emit("message", {
+          roomId: room,
+          sender: "AI Assistant",
+          content: "Sorry, I couldn't process that.",
+        });
+      }
+    }
   });
 
   socket.on("leave-room", ({ room, username }) => {
