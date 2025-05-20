@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
       const prompt = message.replace("@AI", "").trim();
 
       try {
-        const response = await ai.models.generateContent({
+        const response = await genAI.models.generateContent({
           model: 'gemini-2.0-flash',
           contents: prompt,
         });
