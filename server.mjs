@@ -1,9 +1,9 @@
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai"
 
 const port = process.env.PORT || 3001;
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const httpServer = createServer((req, res) => {
   res.writeHead(200);
@@ -39,9 +39,10 @@ io.on("connection", (socket) => {
       const prompt = message.replace("@AI", "").trim();
 
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        const result = await model.generateContent(prompt);
-        const response = await result.response.text();
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: prompt,
+        });
 
         io.to(room).emit("message", {
           roomId: room,
