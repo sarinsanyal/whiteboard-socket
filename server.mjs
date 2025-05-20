@@ -43,11 +43,13 @@ io.on("connection", (socket) => {
           model: 'gemini-2.0-flash',
           contents: prompt,
         });
-        console.log("AI generated response: ", response);
+        
+        const textResponse = response.candidates[0].content;
+
         io.to(room).emit("message", {
           roomId: room,
           sender: "AI Assistant",
-          content: response,
+          content: textResponse,
         });
       } catch (error) {
         console.error("Gemini error:", error);
