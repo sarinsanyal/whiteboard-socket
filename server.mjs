@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
           contents: prompt,
         });
         
-        const textResponse = response.candidates[0].content;
+        const textResponse = response.candidates[0].content.parts[0].text;
         console.log("AI response: ", textResponse);
 
         io.to(room).emit("message", {
