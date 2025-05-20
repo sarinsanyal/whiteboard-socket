@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
           model: 'gemini-2.0-flash',
           contents: prompt,
         });
-
+        console.log("AI generated response: ", response);
         io.to(room).emit("message", {
           roomId: room,
           sender: "AI Assistant",
