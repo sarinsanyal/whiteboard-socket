@@ -5,6 +5,8 @@ import { GoogleGenAI } from "@google/genai"
 const port = process.env.PORT || 3001;
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+const usersInRooms = {};
+
 const httpServer = createServer((req, res) => {
   res.writeHead(200);
   res.end("Socket server is running!");
@@ -27,8 +29,14 @@ io.on("connection", (socket) => {
     socket.data.username = username;
     socket.data.room = room;
 
+    if (!usersInRooms[room]) usersInRooms[room] = [];
+    if (!usersInRooms[room].includes(username)) {
+      usersInRooms[room].push(username);
+    }
+
     console.log(`User ${username} joined room ${room}`);
     socket.to(room).emit("user_joined", `${username} joined room`);
+    io.to(room).emit("update-users", usersInRooms[room]);
   });
 
   socket.on("message", async ({ room, message, sender }) => {
@@ -43,7 +51,7 @@ io.on("connection", (socket) => {
           model: 'gemini-2.0-flash',
           contents: "In short, give me an answer: " + prompt,
         });
-        
+
         const textResponse = response.candidates[0].content.parts[0].text;
         console.log("AI response: ", textResponse);
 
@@ -65,6 +73,11 @@ io.on("connection", (socket) => {
 
   socket.on("leave-room", ({ room, username }) => {
     socket.leave(room);
+
+    if (usersInRooms[room]) {
+      usersInRooms[room] = usersInRooms[room].filter(u => u !== username);
+      io.to(room).emit("update-users", usersInRooms[room]);
+    }
     console.log(`User ${username} manually left room ${room}`);
     socket.to(room).emit("user_left", `${username} left the room`);
   });
@@ -75,6 +88,10 @@ io.on("connection", (socket) => {
 
     if (room && username) {
       console.log(`User ${username} left room ${room}`);
+      if (usersInRooms[room]) {
+        usersInRooms[room] = usersInRooms[room].filter(u => u !== username);
+        io.to(room).emit("update-users", usersInRooms[room]);
+      }
       socket.to(room).emit("user_left", `${username} left the room`);
     } else {
       console.log(`User ${socket.id} disconnected without joining a room.`);
