@@ -14,7 +14,10 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://whiteboard-pied.vercel.app",
+    origin: [
+      "https://whiteboard-pied.vercel.app", 
+      "http://localhost:3000"               
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
