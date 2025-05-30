@@ -15,8 +15,8 @@ const httpServer = createServer((req, res) => {
 const io = new Server(httpServer, {
   cors: {
     origin: [
-      "https://whiteboard-pied.vercel.app", 
-      "http://localhost:3000"               
+      "https://whiteboard-pied.vercel.app",
+      "http://localhost:3000"
     ],
     methods: ["GET", "POST"],
     credentials: true,
@@ -73,6 +73,16 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  socket.on("code-change", ({ roomId, nickname, code }) => {
+    // console.log("Sending code-update to room:", roomId);
+    io.to(roomId).emit("code-update", { code });
+    // console.log(`\n💻 Code change occured in room ${roomId} by user ${nickname}: \n`, code);
+  });
+
+  socket.on("cursor-change", ({ roomId, nickname, position }) => {
+		socket.to(roomId).emit("cursor-update", { nickname, position });
+	});
 
   socket.on("leave-room", ({ room, username }) => {
     socket.leave(room);
