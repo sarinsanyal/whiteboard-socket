@@ -56,7 +56,6 @@ io.on("connection", (socket) => {
         });
 
         const textResponse = response.candidates[0].content.parts[0].text;
-        console.log("AI response: ", textResponse);
 
         io.to(room).emit("message", {
           roomId: room,
@@ -77,7 +76,7 @@ io.on("connection", (socket) => {
   socket.on("code-change", ({ roomId, nickname, code }) => {
     // console.log("Sending code-update to room:", roomId);
     io.to(roomId).emit("code-update", { code });
-    // console.log(`\n💻 Code change occured in room ${roomId} by user ${nickname}: \n`, code);
+    console.log(`\n💻 Code change occured in room ${roomId} by user ${nickname}: \n`, code);
   });
 
   socket.on("cursor-change", ({ roomId, nickname, position }) => {
