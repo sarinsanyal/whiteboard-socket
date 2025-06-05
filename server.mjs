@@ -94,6 +94,14 @@ io.on("connection", (socket) => {
     socket.to(room).emit("user_left", `${username} left the room`);
   });
 
+  socket.on("draw", ({ x0, y0, x1, y1, color, roomId, nickname }) => {
+    socket.to(roomId).emit("draw", { x0, y0, x1, y1, color, room: roomId, nickname });
+  });
+
+  socket.on("clear-canvas", ({ room }) => {
+    socket.to(room).emit("clear-canvas", { room });
+  });
+
   socket.on("disconnect", () => {
     const username = socket.data.username;
     const room = socket.data.room;
