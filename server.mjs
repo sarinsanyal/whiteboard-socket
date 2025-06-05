@@ -79,9 +79,9 @@ io.on("connection", (socket) => {
     console.log(`\n💻 Code change occured in room ${roomId} by user ${nickname}: \n`, code);
   });
 
-  socket.on("cursor-change", ({ roomId, nickname, position }) => {
-		socket.to(roomId).emit("cursor-update", { nickname, position });
-	});
+  // socket.on("cursor-change", ({ roomId, nickname, position }) => {
+	// 	socket.to(roomId).emit("cursor-update", { nickname, position });
+	// });
 
   socket.on("leave-room", ({ room, username }) => {
     socket.leave(room);
