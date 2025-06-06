@@ -6,6 +6,7 @@ const port = process.env.PORT || 3001;
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const usersInRooms = {};
+const rooms = {};
 
 const httpServer = createServer((req, res) => {
   res.writeHead(200);
@@ -73,15 +74,10 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("code-change", ({ roomId, nickname, code }) => {
-    // console.log("Sending code-update to room:", roomId);
-    io.to(roomId).emit("code-update", { code });
-    console.log(`\n💻 Code change occured in room ${roomId} by user ${nickname}: \n`, code);
+  socket.on("code-update", ({ roomId, nickname, code }) => {
+    socket.to(roomId).emit("code-broadcast", { code });
   });
 
-  // socket.on("cursor-change", ({ roomId, nickname, position }) => {
-	// 	socket.to(roomId).emit("cursor-update", { nickname, position });
-	// });
 
   socket.on("leave-room", ({ room, username }) => {
     socket.leave(room);
