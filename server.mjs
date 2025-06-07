@@ -78,6 +78,9 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("code-broadcast", { code });
   });
 
+  socket.on("language-change", ({ roomId, language }) => {
+		socket.to(roomId).emit("language-broadcast", { language });
+	});
 
   socket.on("leave-room", ({ room, username }) => {
     socket.leave(room);
