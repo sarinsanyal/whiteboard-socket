@@ -75,8 +75,8 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("language-broadcast", { language });
   });
 
-  socket.on("draw", (data) => {
-    socket.to(data.roomId).emit("draw", data);
+  socket.on("draw", ({ x0, y0, x1, y1, color, roomId, nickname }) => {
+    socket.to(roomId).emit("draw", { x0, y0, x1, y1, color, room: roomId, nickname });
   });
 
   socket.on("clear-canvas", ({ room }) => {
