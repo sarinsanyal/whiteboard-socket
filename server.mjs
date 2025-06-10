@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("clear-canvas", ({ room }) => {
-    socket.to(room).emit("clear-canvas");
+    socket.to(room).emit("clear-canvas", {room});
   });
 
   socket.on("start-call", ({ roomId }) => {
